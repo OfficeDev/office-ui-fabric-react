@@ -26,7 +26,15 @@ import {
   resolveDraggingElement,
   resolveDrop,
 } from '../config';
-import { readTreeFromStore, readTreeFromURL, writeTreeToStore, writeTreeToURL } from '../utils/treeStore';
+import {
+  readTreeFromStore,
+  readThemeFromStore,
+  readThemeFromURL,
+  readTreeFromURL,
+  writeTreeToStore,
+  writeThemeToStore,
+  writeTreeToURL,
+} from '../utils/treeStore';
 
 import { DesignerMode, JSONTreeElement } from './types';
 import { ComponentTree } from './ComponentTree';
@@ -68,6 +76,7 @@ type DesignerState = {
   showCode: boolean;
   code: string | null; // only valid if showCode is set to true
   codeError: string | null;
+  themeOverrides: any;
   history: Array<JSONTreeElement>;
   redo: Array<JSONTreeElement>;
   insertComponent: { uuid: string; where: string; parentUuid?: string };
@@ -83,6 +92,13 @@ type DesignerAction =
   | { type: 'SELECT_PARENT' }
   | { type: 'DELETE_SELECTED_COMPONENT' }
   | { type: 'PROP_CHANGE'; component: JSONTreeElement; propName: string; propValue: any }
+  | {
+      type: 'COMPONENT_STYLE_CHANGE';
+      component: JSONTreeElement;
+      propName: string;
+      propValue: any;
+      componentStyle: boolean;
+    }
   | { type: 'SWITCH_TO_STORE' }
   | { type: 'RESET_STORE' }
   | { type: 'SHOW_CODE'; show: boolean }
@@ -194,9 +210,41 @@ const stateReducer: Reducer<DesignerState, DesignerAction> = (draftState, action
       }
       break;
 
+    case 'COMPONENT_STYLE_CHANGE':
+      if (action.componentStyle) {
+        const editedComponent = jsonTreeFindElement(draftState.jsonTree, action.component.uuid);
+        if (editedComponent) {
+          if (!editedComponent.props) {
+            editedComponent.props = {};
+          }
+          if (!editedComponent.props.style) {
+            editedComponent.props.style = {};
+          }
+          editedComponent.props.style[action.propName] = action.propValue;
+          treeChanged = true;
+        }
+      } else {
+        if (!draftState.themeOverrides?.componentStyles) {
+          draftState.themeOverrides.componentStyles = {};
+        }
+
+        if (!draftState.themeOverrides?.componentStyles[action.component.displayName]) {
+          draftState.themeOverrides.componentStyles[action.component.displayName] = {};
+        }
+
+        if (!draftState.themeOverrides?.componentStyles[action.component.displayName].root) {
+          draftState.themeOverrides.componentStyles[action.component.displayName].root = {};
+        }
+
+        draftState.themeOverrides.componentStyles[action.component.displayName].root[action.propName] =
+          action.propValue;
+      }
+      break;
+
     case 'SWITCH_TO_STORE':
       draftState.jsonTree = readTreeFromStore() || getDefaultJSONTree();
       draftState.jsonTreeOrigin = 'store';
+      draftState.themeOverrides = readThemeFromStore();
       treeChanged = true;
       break;
 
@@ -206,6 +254,7 @@ const stateReducer: Reducer<DesignerState, DesignerAction> = (draftState, action
 
       draftState.jsonTree = getDefaultJSONTree();
       draftState.jsonTreeOrigin = 'store';
+      draftState.themeOverrides = {};
       treeChanged = true;
       break;
 
@@ -320,9 +369,15 @@ export const Designer: React.FunctionComponent = () => {
   const [state, dispatch] = useImmerReducer(stateReducer, null, () => {
     let jsonTreeOrigin: JSONTreeOrigin = 'url';
     let jsonTree = readTreeFromURL(window.location.href);
+    let theme = readThemeFromURL(window.location.href);
+
     if (!jsonTree) {
       jsonTree = readTreeFromStore() || getDefaultJSONTree();
       jsonTreeOrigin = 'store';
+    }
+
+    if (!theme) {
+      theme = readThemeFromStore();
     }
 
     return {
@@ -334,6 +389,7 @@ export const Designer: React.FunctionComponent = () => {
       showCode: false,
       code: null,
       codeError: null,
+      themeOverrides: theme || {},
       history: [],
       redo: [],
       insertComponent: null,
@@ -350,6 +406,12 @@ export const Designer: React.FunctionComponent = () => {
     }
   }, [state.jsonTree, state.jsonTreeOrigin]);
 
+  React.useEffect(() => {
+    if (state.jsonTreeOrigin === 'store') {
+      writeThemeToStore(state.themeOverrides);
+    }
+  }, [state.themeOverrides, state.jsonTreeOrigin]);
+
   const {
     draggingElement,
     jsonTree,
@@ -359,6 +421,7 @@ export const Designer: React.FunctionComponent = () => {
     showCode,
     code,
     codeError,
+    themeOverrides,
     insertComponent,
   } = state;
 
@@ -442,6 +505,19 @@ export const Designer: React.FunctionComponent = () => {
     [dispatch],
   );
 
+  const handleComponentStyleChange = React.useCallback(
+    ({ jsonTreeElement, name, value, componentOnly }) => {
+      dispatch({
+        type: 'COMPONENT_STYLE_CHANGE',
+        component: jsonTreeElement,
+        propName: name.replace('design-', ''),
+        propValue: value,
+        componentStyle: componentOnly,
+      });
+    },
+    [dispatch],
+  );
+
   const handleCloneComponent = React.useCallback(
     (e: MouseEvent) => {
       dragAndDropData.current.position = { x: e.clientX, y: e.clientY };
@@ -493,8 +569,8 @@ export const Designer: React.FunctionComponent = () => {
   );
 
   const getShareableLink = React.useCallback(() => {
-    return writeTreeToURL(jsonTree, window.location.href);
-  }, [jsonTree]);
+    return writeTreeToURL(jsonTree, themeOverrides, window.location.href);
+  }, [jsonTree, themeOverrides]);
 
   const switchToStore = React.useCallback(() => {
     dispatch({ type: 'SWITCH_TO_STORE' });
@@ -576,7 +652,11 @@ export const Designer: React.FunctionComponent = () => {
     selectedJSONTreeElement.uuid !== 'builder-root' &&
     selectedJSONTreeElement;
 
-  const codeSandboxData = getCodeSandboxInfo(jsonTree, renderElementToJSX(renderJSONTreeToJSXElement(jsonTree)));
+  const codeSandboxData = getCodeSandboxInfo(
+    jsonTree,
+    renderElementToJSX(renderJSONTreeToJSXElement(jsonTree)),
+    themeOverrides,
+  );
 
   return (
     <div
@@ -759,6 +839,7 @@ export const Designer: React.FunctionComponent = () => {
                   onMoveComponent={handleMoveComponent}
                   onDeleteSelectedComponent={handleDeleteSelectedComponent}
                   onGoToParentComponent={handleGoToParentComponent}
+                  themeOverrides={themeOverrides}
                   role="main"
                   inUseMode={mode === 'use'}
                   setHeaderMessage={setHeaderMessage}
@@ -833,8 +914,10 @@ export const Designer: React.FunctionComponent = () => {
             {selectedJSONTreeElement && (
               <Knobs
                 onPropChange={handlePropChange}
+                onStyleChange={handleComponentStyleChange}
                 info={selectedComponentInfo}
                 jsonTreeElement={selectedJSONTreeElement}
+                themeOverrides={themeOverrides}
               />
             )}
           </div>
