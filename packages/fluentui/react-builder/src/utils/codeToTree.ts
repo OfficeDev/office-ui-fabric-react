@@ -28,6 +28,11 @@ const prefixElementNamesPlugin = ({ types }) => {
   };
 };
 
+const prefixToModuleName = {
+  Fluent: '@fluentui/react-northstar',
+  Fabric: '@fluentui/react/lib/Button',
+};
+
 export const codeToTree: (code: string) => JSONTreeElement = code => {
   const compiled = transform(code, {
     plugins: [prefixElementNamesPlugin],
@@ -36,7 +41,6 @@ export const codeToTree: (code: string) => JSONTreeElement = code => {
 
   (window as any).convert = (name, props, ...children) => {
     // console.log('CONVERT', { name, props, children });
-
     const objectName = name.match(/^hack_(.*)_dot_(.*)$/);
     if (objectName) {
       name = `${objectName[1]}.${objectName[2]}`;
@@ -47,12 +51,24 @@ export const codeToTree: (code: string) => JSONTreeElement = code => {
       }
     }
 
+    const isIcon = props?.['data-builder-id'] === undefined;
+    const isDiv = name === 'div';
+    const isComponent = objectName && objectName[1] && prefixToModuleName[objectName[1]];
+    if (!(isIcon || isDiv || isComponent)) {
+      name = `Fluent.${name}`;
+    }
+
     const uuid = props && props.hasOwnProperty('data-builder-id') ? props['data-builder-id'] : getUUID();
     delete props?.['data-builder-id'];
 
     return {
       type: name,
       displayName: name,
+      ...(isComponent
+        ? { moduleName: prefixToModuleName[objectName[1]] }
+        : isIcon || isDiv
+        ? {}
+        : { moduleName: prefixToModuleName['Fluent'] }),
       uuid,
       ...(name.match(/^[A-Za-z]/) && { $$typeof: 'Symbol(react.element)' }),
       props: { ...props, ...(children.length > 0 && { children }) },

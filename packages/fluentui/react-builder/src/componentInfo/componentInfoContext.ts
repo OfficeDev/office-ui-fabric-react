@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { ComponentInfo } from './types';
+import { fabricComponents } from './fabricComponentsList';
 
 function importAll(contexts: __WebpackModuleApi.RequireContext[]): ComponentInfo[] {
   const cache: ComponentInfo[] = [];
@@ -31,9 +32,17 @@ export const componentInfoContext: {
 
 componentInfoContext.byDisplayName = infoObjects.reduce((acc, next) => {
   next.moduleName = '@fluentui/react-northstar';
+  next.displayName = `Fluent.${next.displayName}`;
+  next.parentDisplayName = `Fluent.${next.parentDisplayName}`;
   acc[next.displayName] = next;
   return acc;
 }, {});
+
+fabricComponents.forEach(item => {
+  item.moduleName = '@fluentui/react/lib/Button';
+  item.displayName = `Fabric.${item.displayName}`;
+  componentInfoContext.byDisplayName[item.displayName] = item;
+});
 
 componentInfoContext.fromComponent = Component => {
   const displayName = Component.displayName || Component.name;

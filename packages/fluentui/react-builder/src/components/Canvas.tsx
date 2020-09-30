@@ -7,6 +7,7 @@ import { EventListener } from '@fluentui/react-component-event-listener';
 import { fiberNavFindJSONTreeElement, fiberNavFindOwnerInJSONTree, renderJSONTreeToJSXElement } from '../config';
 import { DebugFrame } from './DebugFrame';
 import { DropSelector } from './DropSelector';
+import { StyleProvider } from '../utils/StyleProvider';
 import { ReaderText } from './ReaderText';
 
 const showNarration = false;
@@ -333,7 +334,9 @@ export const Canvas: React.FunctionComponent<CanvasProps> = ({
                 />
               )}
               {inUseMode && <EventListener capture type="focus" listener={handleFocus} target={document} />}
-              {renderJSONTreeToJSXElement(jsonTree, renderJSONTreeElement)}
+              <StyleProvider childWindow={window} tree={jsonTree}>
+                {renderJSONTreeToJSXElement(jsonTree, renderJSONTreeElement)}
+              </StyleProvider>
               {showNarration && selectedComponent && (
                 <ReaderText selector={`[data-builder-id="${selectedComponent.uuid}"]`} />
               )}
