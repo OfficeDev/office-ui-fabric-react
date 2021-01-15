@@ -16,6 +16,9 @@ import { CreateRenderer } from '@fluentui/react-northstar-styles-renderer';
 import { TelemetryPopover } from '@fluentui/react-telemetry';
 import { mergeThemes } from '@fluentui/styles';
 
+import { ThemeProvider } from '@fluentui/react-theme-provider';
+import { convertTheme } from './utils/convertTheme';
+
 import { ThemeName, ThemeContext, ThemeContextData, themeContextDefaults } from './context/ThemeContext';
 import Routes from './routes';
 
@@ -66,26 +69,28 @@ const App: React.FC = () => {
   );
 
   const rendererFactory = useRendererFactory();
+  const theme = mergeThemes(themes[themeName], {
+    staticStyles: [
+      {
+        a: {
+          textDecoration: 'none',
+        },
+      },
+    ],
+  });
+
+  const convergedTheme = convertTheme(theme);
 
   return (
     <ThemeContext.Provider value={themeContext}>
       <RendererContext.Provider value={rendererFactory}>
         <TelemetryPopover>
-          <Provider
-            as={React.Fragment}
-            theme={mergeThemes(themes[themeName], {
-              staticStyles: [
-                {
-                  a: {
-                    textDecoration: 'none',
-                  },
-                },
-              ],
-            })}
-          >
-            <Debug />
-            <Routes />
-          </Provider>
+          <ThemeProvider applyTo="none" theme={convergedTheme}>
+            <Provider as={React.Fragment} theme={theme}>
+              <Debug />
+              <Routes />
+            </Provider>
+          </ThemeProvider>
         </TelemetryPopover>
       </RendererContext.Provider>
     </ThemeContext.Provider>

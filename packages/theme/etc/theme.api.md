@@ -108,8 +108,10 @@ export namespace Depths {
     depth64 = "0 25.6px 57.6px 0 rgba(0, 0, 0, 0.22), 0 4.8px 14.4px 0 rgba(0, 0, 0, 0.18)";
 }
 
+// Warning: (ae-forgotten-export) The symbol "ITheme" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const FluentTheme: ITheme;
+export const FluentTheme: ITheme_2;
 
 // @public (undocumented)
 export namespace FontSizes {
@@ -392,9 +394,10 @@ export interface IPalette {
     yellowLight: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "IPartialTheme" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export interface IPartialTheme extends PartialTheme {
-}
+export type IPartialTheme = IPartialTheme_2;
 
 // @public (undocumented)
 export interface IScheme {
@@ -554,8 +557,7 @@ export interface ISpacing {
 }
 
 // @public (undocumented)
-export interface ITheme extends Theme {
-}
+export type ITheme = ITheme_2;
 
 // @public (undocumented)
 export namespace LocalizedFontFamilies {

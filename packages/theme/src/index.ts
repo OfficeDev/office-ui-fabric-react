@@ -8,5 +8,4 @@ export * from './fonts/index';
 export * from './utilities/index';
 export * from './createTheme';
 export { FluentTheme } from './FluentTheme';
-
 import './version';
