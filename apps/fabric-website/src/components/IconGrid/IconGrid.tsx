@@ -5,14 +5,14 @@ const styles: any = stylesImport;
 
 export interface IIconGridProps {
   /**
-   * An array of icons.
+   * Determines which iconset should be rendered
    */
-  icons: { name: string }[];
+  iconType: 'font' | 'svg' | 'core';
+}
 
-  /**
-   * If we should render using `Icon` from Fabric
-   */
-  useFabricIcons?: boolean;
+export interface IIconInfo {
+  name: string;
+  icon?: React.ComponentType;
 }
 
 export interface IIconGridState {
@@ -20,6 +20,11 @@ export interface IIconGridState {
    * The text we are filtering the icons by.
    */
   searchQuery: string;
+
+  /**
+   * An array of icons.
+   */
+  icons?: IIconInfo[];
 }
 
 export class IconGrid extends React.Component<IIconGridProps, IIconGridState> {
@@ -33,9 +38,6 @@ export class IconGrid extends React.Component<IIconGridProps, IIconGridState> {
     };
 
     this._iconRefs = {};
-    for (const icon of props.icons) {
-      this._iconRefs[icon.name] = React.createRef();
-    }
   }
 
   public render(): JSX.Element {
@@ -56,36 +58,85 @@ export class IconGrid extends React.Component<IIconGridProps, IIconGridState> {
     );
   }
 
-  private _getItems = (): { name: string }[] => {
-    const { icons } = this.props;
-    const { searchQuery } = this.state;
+  public async componentDidMount() {
+    // Load the icons async after mount to avoid them being bundled and parsed with the page,
+    // due to their large bundle size.
+    switch (this.props.iconType) {
+      case 'font':
+        const fontIcons = (await import('@uifabric/icons/lib/data/AllIconNames.json')) as IIconInfo[];
+        // There's a metadata entry in this file which doesn't have a name
+        this.setState({ icons: fontIcons.filter(icon => !!icon.name) });
+        break;
 
-    return icons.filter(icon => icon && icon.name && icon.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1);
-  };
+      case 'core':
+        const coreIcons = (await import('office-ui-fabric-core/src/data/icons.json')) as IIconInfo[];
+        this.setState({ icons: coreIcons });
+        break;
 
-  private _renderIcon = (icon: { name: string }, index?: number): JSX.Element => {
-    const { useFabricIcons } = this.props;
-    let iconClassName = `ms-Icon ms-Icon--${icon.name}`;
-    const iconRef = this._iconRefs[icon.name];
-    if (iconRef.current && iconRef.current.offsetWidth > 80) {
-      iconClassName += ' hoverIcon';
+      case 'svg':
+        const MDL2Icons = await import('@fluentui/react-icons');
+        this.setState({
+          icons: Object.keys(MDL2Icons)
+            .map((name): IIconInfo | undefined => {
+              const IconComponent = MDL2Icons[name];
+              if (typeof IconComponent === 'function' && /^[A-Z].*Icon$/.test(name)) {
+                return { name, icon: IconComponent };
+              }
+              return undefined;
+            })
+            .filter(icon => !!icon),
+        });
+        break;
     }
+  }
 
-    return (
-      <li key={icon.name + index} aria-label={icon.name + ' icon'}>
-        {useFabricIcons ? (
-          <Icon iconName={icon.name} />
-        ) : (
-          <i ref={iconRef} className={iconClassName} title={icon.name} aria-hidden="true" />
-        )}
-        <span>{icon.name}</span>
-      </li>
-    );
+  private _getItems = (): { name: string }[] => {
+    const { icons, searchQuery } = this.state;
+    const query = searchQuery.toLowerCase();
+
+    return icons ? (query ? icons.filter(icon => icon.name?.toLowerCase().indexOf(query) !== -1) : icons) : [];
   };
 
-  private _onSearchQueryChanged = (ev, newValue: string): void => {
+  private _renderIcon = (icon: IIconInfo): JSX.Element => {
+    const { iconType } = this.props;
+    let iconClassName = `ms-Icon ms-Icon--${icon.name}`;
+
+    switch (iconType) {
+      case 'font':
+        return (
+          <li key={icon.name} title={icon.name} aria-label={icon.name + ' icon'}>
+            <Icon iconName={icon.name} />
+            <span className={styles.iconName}>{icon.name}</span>
+          </li>
+        );
+      case 'svg':
+        const IconComponent = icon.icon;
+        return (
+          <li key={icon.name} title={icon.name} aria-label={icon.name + ' icon'}>
+            <IconComponent />
+            <span className={styles.iconName}>{icon.name}</span>
+          </li>
+        );
+      case 'core':
+        if (!this._iconRefs[icon.name]) {
+          this._iconRefs[icon.name] = React.createRef();
+        }
+        const iconRef = this._iconRefs[icon.name];
+        if (iconRef.current && iconRef.current.offsetWidth > 80) {
+          iconClassName += ' hoverIcon';
+        }
+        return (
+          <li key={icon.name} aria-label={icon.name + ' icon'}>
+            <i ref={iconRef} className={iconClassName} title={icon.name} aria-hidden="true" />
+            <span className={styles.iconName}>{icon.name}</span>
+          </li>
+        );
+    }
+  };
+
+  private _onSearchQueryChanged = (ev: unknown, newValue: string): void => {
     this.setState({
-      searchQuery: newValue,
+      searchQuery: newValue || '',
     });
   };
 }

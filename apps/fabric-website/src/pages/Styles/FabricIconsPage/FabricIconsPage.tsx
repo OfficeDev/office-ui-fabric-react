@@ -9,8 +9,7 @@ import { Platforms } from '../../../interfaces/Platforms';
 
 const baseUrl =
   'https://github.com/microsoft/fluentui/tree/7.0/apps/fabric-website/src/pages/Styles/FabricIconsPage/docs';
-const fabricCoreIcons = require('office-ui-fabric-core/src/data/icons.json');
-const fabricReactIcons = require('@uifabric/icons/lib/data/AllIconNames.json');
+
 // en dashes look like regular dashes in a monospace font
 const enDash = '–';
 
@@ -35,7 +34,8 @@ function _otherSections(platform: Platforms): IPageSectionProps<Platforms>[] {
           content: require('!raw-loader!@uifabric/fabric-website/src/pages/Styles/FabricIconsPage/docs/web/FabricIconsUsage.md') as string,
           jumpLinks: [
             // prettier-ignore
-            { text: enDash + ' Fluent UI React', url: 'fluent-ui-react' },
+            { text: enDash + ' Fluent UI React (font)', url: 'fluent-ui-react-font-based-icons' },
+            { text: enDash + ' Fluent UI React (SVG)', url: 'fluent-ui-react-svg-based-icons' },
             { text: enDash + ' Fabric Core', url: 'fabric-core' },
             { text: enDash + ' Fluent UI Icons tool', url: 'fluent-ui-icons-tool' },
           ],
@@ -45,11 +45,14 @@ function _otherSections(platform: Platforms): IPageSectionProps<Platforms>[] {
           sectionName: 'Available icons',
           content: (
             <Pivot>
-              <PivotItem headerText="Fluent UI React" className={styles.iconGrid}>
-                <IconGrid icons={fabricReactIcons} useFabricIcons={true} />
+              <PivotItem headerText="Fluent UI React (font-based)" className={styles.iconGrid}>
+                <IconGrid iconType="font" />
+              </PivotItem>
+              <PivotItem headerText="Fluent UI React (svg-based)" className={styles.iconGrid}>
+                <IconGrid iconType="svg" />
               </PivotItem>
               <PivotItem headerText="Fabric Core" className={styles.iconGrid}>
-                <IconGrid icons={fabricCoreIcons} />
+                <IconGrid iconType="core" />
               </PivotItem>
             </Pivot>
           ),
