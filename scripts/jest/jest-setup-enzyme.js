@@ -1,4 +1,4 @@
-/** Jest test setup file. */
+/** Jest test setup file for packages that use enzyme. */
 
 const { configure } = require('enzyme');
 const Adapter = require('@wojtekmaj/enzyme-adapter-react-17');
