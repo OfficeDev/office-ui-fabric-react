@@ -37,6 +37,7 @@ import PerformanceTests from './views/PerformanceTests';
 import ButtonNameComputation from './views/ButtonNameComputation';
 import { LazyWithBabel } from './components/ComponentDoc/LazyWithBabel';
 import {
+  InstructionMessagePrototype,
   ChatPanePrototype,
   ChatMessagesPrototype,
   CustomScrollbarPrototype,
@@ -106,6 +107,8 @@ const Routes = () => (
                   <MarkdownPage page={Debugging} />
                 </Route>
                 <Route exact path="/quick-start" component={QuickStart} />
+
+                <Route exact path="/prototype-instruction-message" component={InstructionMessagePrototype} />
                 <Route exact path="/perf-tests" component={PerformanceTests} />
                 <Route exact path="/prototype-roster" component={RosterPrototype} />
                 <Route exact path="/prototype-chat-pane" component={ChatPanePrototype} />
