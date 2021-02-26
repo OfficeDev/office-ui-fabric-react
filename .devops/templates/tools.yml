@@ -4,3 +4,7 @@ steps:
     inputs:
       versionSpec: '12.x'
     displayName: 'Install Node.js'
+
+  - script: |
+      npm i -g yarn@1
+    displayName: 'Install yarn'
