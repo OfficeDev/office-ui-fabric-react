@@ -5,9 +5,6 @@ steps:
       versionSpec: '12.x'
     displayName: 'Install Node.js'
 
-  - task: YarnInstaller@0
-    displayName: 'Use Yarn 1.22.x'
-    inputs:
-      versionSpec: 1.22.x
-      checkLatest: false
-      includePrerelease: false
+  - script: |
+      npm i -g yarn@1
+    displayName: 'Install yarn'
