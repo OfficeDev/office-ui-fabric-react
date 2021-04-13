@@ -4,6 +4,7 @@
 
 ```ts
 
+import { ComponentState } from '@fluentui/react-utilities';
 import { getTabsterAttribute } from 'tabster';
 import * as React from 'react';
 import { Types } from 'tabster';
@@ -11,7 +12,9 @@ import { Types } from 'tabster';
 export { getTabsterAttribute }
 
 // @public (undocumented)
-export const renderTabsterProvider: (state: TabsterProviderState) => JSX.Element;
+export const renderTabsterProvider: (state: ComponentState<React.Ref<HTMLElement>, TabsterProviderProps & {
+    contextValue: import("tabster/dist/Types").TabsterCore | undefined;
+}, never, "dir">) => JSX.Element;
 
 // @public
 export const TabsterProvider: React.FunctionComponent<TabsterProviderProps>;
@@ -22,20 +25,13 @@ export interface TabsterProviderProps extends React.HTMLAttributes<HTMLElement> 
     // (undocumented)
     dir?: 'rtl' | 'ltr';
     // (undocumented)
-    document: Document | undefined;
+    document?: Document | undefined;
 }
 
 // @public (undocumented)
-export interface TabsterProviderState extends TabsterProviderProps {
-    // Warning: (ae-forgotten-export) The symbol "TabsterContextValue" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+export type TabsterProviderState = ComponentState<React.Ref<HTMLElement>, TabsterProviderProps & {
     contextValue: TabsterContextValue | undefined;
-    // (undocumented)
-    dir: 'ltr' | 'rtl';
-    // (undocumented)
-    document: Document | undefined;
-}
+}, never, 'dir'>;
 
 // @public
 export const useArrowNavigationGroup: (options?: UseArrowNavigationGroupOptions | undefined) => Types.TabsterDOMAttribute;
@@ -54,8 +50,14 @@ export const useFocusFinders: () => {
 };
 
 // @public (undocumented)
-export const useTabsterProvider: (props: TabsterProviderProps, ref: React.Ref<HTMLElement>) => TabsterProviderState;
+export const useTabsterProvider: (props: TabsterProviderProps, ref: React.Ref<HTMLElement>) => ComponentState<React.Ref<HTMLElement>, TabsterProviderProps & {
+    contextValue: import("tabster/dist/Types").TabsterCore | undefined;
+}, never, "dir">;
 
+
+// Warnings were encountered during analysis:
+//
+// lib/TabsterProvider.d.ts:14:5 - (ae-forgotten-export) The symbol "TabsterContextValue" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
