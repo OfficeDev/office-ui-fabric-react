@@ -59,6 +59,7 @@ export const MessageBarBase: React.FunctionComponent<IMessageBarProps> = React.f
     truncated,
     dismissButtonAriaLabel,
     messageBarIconProps,
+    overflowButtonTitle,
     role,
   } = props;
 
@@ -124,6 +125,7 @@ export const MessageBarBase: React.FunctionComponent<IMessageBarProps> = React.f
               iconProps={expandIconProps}
               ariaLabel={overflowButtonAriaLabel}
               aria-expanded={expandSingleLine}
+              title={overflowButtonTitle}
             />
           </div>
         )}

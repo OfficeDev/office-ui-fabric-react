@@ -97,7 +97,11 @@ export interface IMessageBarProps extends React.HTMLAttributes<HTMLElement>, Rea
   messageBarIconProps?: IIconProps;
 
   /**
-   * Custom role to apply to the MessageBar.
+   * Tooltip message on overflow icon button when MessageBar is truncated.
+   */
+  overflowButtonTitle?: string;
+
+  /* Custom role to apply to the MessageBar.
    * @defaultvalue `alert` or `status` (based on `MessageBarType`)
    */
   role?: 'alert' | 'status' | 'none';
