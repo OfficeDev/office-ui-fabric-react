@@ -1,4 +1,6 @@
 import * as rootPreview from '../../../.storybook/preview';
 
 export const decorators = [...rootPreview.decorators];
-export const parameters = { layout: 'centered' };
+
+/** @type {typeof rootPreview.parameters} */
+export const parameters = { ...rootPreview.parameters, layout: 'centered' };
