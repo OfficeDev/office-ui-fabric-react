@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChevronDownIcon } from './DefaultIcons';
+import { ChevronDownIcon } from '../../common/DefaultIcons';
 import { MenuButtonProps, MenuButtonStyleSelectors } from './MenuButton.types';
 import { renderMenuButton } from './renderMenuButton';
 import { useMenuButton } from './useMenuButton';

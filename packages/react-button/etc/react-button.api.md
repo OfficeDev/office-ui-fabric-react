@@ -193,6 +193,47 @@ export const renderCompoundButton: (state: CompoundButtonState) => JSX.Element;
 export const renderMenuButton: (state: MenuButtonState) => JSX.Element;
 
 // @public
+export const renderSplitButton: (state: SplitButtonState) => JSX.Element;
+
+// @public
+export const SplitButton: React_2.ForwardRefExoticComponent<SplitButtonProps & React_2.RefAttributes<HTMLElement>>;
+
+// @public (undocumented)
+export interface SplitButtonProps extends ButtonProps, MenuButtonProps {
+    button?: ShorthandProps<ButtonProps>;
+    menuButton?: ShorthandProps<MenuButtonProps>;
+    // (undocumented)
+    menuButtonRef?: React_2.RefObject<HTMLButtonElement>;
+}
+
+// @public (undocumented)
+export const splitButtonShorthandProps: readonly ["button", "menuButton"];
+
+// @public (undocumented)
+export interface SplitButtonState extends Omit<SplitButtonProps, 'children' | 'icon' | 'menu' | 'menuIcon'>, MenuButtonState {
+    // (undocumented)
+    button?: ObjectShorthandProps<ButtonProps>;
+    // (undocumented)
+    menuButton?: ObjectShorthandProps<MenuButtonProps>;
+}
+
+// @public (undocumented)
+export type SplitButtonStyleSelectors = MenuButtonStyleSelectors & {};
+
+// @public (undocumented)
+export type SplitButtonTokens = MenuButtonTokens & {
+    dividerColor?: string;
+};
+
+// @public (undocumented)
+export type SplitButtonVariants = MenuButtonVariants;
+
+// @public (undocumented)
+export type SplitButtonVariantTokens = Partial<{
+    [variant in SplitButtonVariants]: Partial<SplitButtonTokens>;
+}>;
+
+// @public
 export const ToggleButton: React_2.ForwardRefExoticComponent<ToggleButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
@@ -247,6 +288,12 @@ export const useMenuButtonState: (state: MenuButtonState) => MenuButtonState;
 
 // @public (undocumented)
 export const useMenuButtonStyles: (state: MenuButtonState, selectors: MenuButtonStyleSelectors) => void;
+
+// @public
+export const useSplitButton: (props: SplitButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: SplitButtonProps | undefined) => SplitButtonState;
+
+// @public (undocumented)
+export const useSplitButtonStyles: (state: SplitButtonState, selectors: SplitButtonStyleSelectors) => void;
 
 // @public (undocumented)
 export const useToggleButton: (props: ToggleButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: ToggleButtonProps | undefined) => ToggleButtonState;

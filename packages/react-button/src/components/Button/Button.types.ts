@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { ComponentProps, ShorthandProps } from '@fluentui/react-utilities';
-import { ObjectShorthandProps } from '@fluentui/react-utilities';
+import { ComponentProps, ObjectShorthandProps, ShorthandProps } from '@fluentui/react-utilities';
 
 /**
  * {@docCategory Button}
