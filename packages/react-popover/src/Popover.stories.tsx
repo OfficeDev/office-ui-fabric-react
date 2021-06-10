@@ -28,10 +28,45 @@ export const Default = (props: PopoverProps) => (
     </PopoverSurface>
   </Popover>
 );
-
+// @FIXME - remove manually specified argTypes once `react-components` package will use new storybook setup(DX)
+// https://github.com/microsoft/fluentui/issues/18514
 Default.argTypes = {
+  open: {
+    defaultValue: false,
+    control: 'boolean',
+  },
+  openOnContext: {
+    defaultValue: false,
+    control: 'boolean',
+  },
+  openOnHover: {
+    defaultValue: false,
+    control: 'boolean',
+  },
+  position: {
+    type: { name: 'string', required: false },
+    control: {
+      type: 'select',
+      options: ['above', 'below', 'before', 'after'],
+    },
+  },
+  align: {
+    type: { name: 'string', required: false },
+    control: {
+      type: 'select',
+      options: ['top', 'bottom', 'start', 'end', 'center'],
+    },
+  },
+  size: {
+    type: { name: 'string', required: false },
+    control: {
+      type: 'select',
+      options: ['small', 'medium', 'large'],
+    },
+  },
   trapFocus: {
     defaultValue: true,
+    control: 'boolean',
   },
 } as ArgTypes;
 Default.parameters = {
