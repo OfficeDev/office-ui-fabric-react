@@ -122,6 +122,7 @@ packages/react-tabs/ @microsoft/cxe-red @behowell
 packages/react-toggle/ @microsoft/cxe-red @behowell
 packages/react-tooltip/ @microsoft/cxe-red @behowell
 packages/react-label/ @microsoft/cxe-red @sopranopillow
+packages/react-popover/ @teams-prg
 
 ## Components
 packages/react/src/components/ActivityItem/ @microsoft/cxe-red @khmakoto
