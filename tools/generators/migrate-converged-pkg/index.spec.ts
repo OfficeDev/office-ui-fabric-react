@@ -113,7 +113,7 @@ describe('migrate-converged-pkg generator', () => {
           outDir: 'dist',
           preserveConstEnums: true,
           target: 'es5',
-          types: ['jest', 'custom-global', 'inline-style-expand-shorthand'],
+          types: ['jest', 'custom-global', 'inline-style-expand-shorthand', 'storybook__addons'],
         },
         extends: '../../tsconfig.base.json',
         include: ['src'],
@@ -282,7 +282,11 @@ describe('migrate-converged-pkg generator', () => {
       expect(tree.read(`${projectStorybookConfigPath}/preview.js`)?.toString('utf-8')).toMatchInlineSnapshot(`
         "import * as rootPreview from '../../../.storybook/preview';
 
-        export const decorators = [...rootPreview.decorators];"
+        /** @type {typeof rootPreview.decorators} */
+        export const decorators = [...rootPreview.decorators];
+
+        /** @type {typeof rootPreview.parameters} */
+        export const parameters = { ...rootPreview.parameters };"
       `);
     });
 
