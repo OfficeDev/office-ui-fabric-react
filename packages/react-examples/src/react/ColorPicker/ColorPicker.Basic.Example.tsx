@@ -49,6 +49,8 @@ export const ColorPickerBasicExample: React.FunctionComponent = () => {
           transparencyAriaLabel:
             'Transparency slider: Use left and right arrow keys to change value, hold shift for a larger jump',
           hueAriaLabel: 'Hue slider: Use left and right arrow keys to change value, hold shift for a larger jump',
+          errorMessageRGB: 'Value must be between 0 to 255',
+          errorMessageAlphaOrTransparency: 'Value must be between 0 to 100',
         }}
       />
 

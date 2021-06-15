@@ -2800,6 +2800,8 @@ export interface IColorPickerStrings {
     alpha?: string;
     alphaAriaLabel?: string;
     blue?: string;
+    errorMessageAlphaOrTransparency?: string;
+    errorMessageRGB?: string;
     green?: string;
     hex?: string;
     // @deprecated

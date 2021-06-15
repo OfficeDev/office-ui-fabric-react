@@ -242,16 +242,27 @@ export class ColorPickerBase extends React.Component<IColorPickerProps, IColorPi
                   if ((comp === 'a' || comp === 't') && alphaSliderHidden) {
                     return null;
                   }
+                  const value = this._getDisplayValue(comp);
+                  const isRGB = comp === 'r' || comp === 'g' || comp === 'b';
+                  const isAlphaOrTransparency = comp === 'a' || comp === 't';
+
                   return (
                     <td key={comp}>
                       <TextField
                         className={classNames.input}
                         onChange={this._textChangeHandlers[comp]}
                         onBlur={this._onBlur}
-                        value={this._getDisplayValue(comp)}
+                        value={value}
                         spellCheck={false}
                         ariaLabel={textLabels[comp]}
                         autoComplete="off"
+                        errorMessage={
+                          isRGB && Number(value) > 255
+                            ? strings.errorMessageRGB
+                            : isAlphaOrTransparency && Number(value) > 100
+                            ? strings.errorMessageAlphaOrTransparency
+                            : undefined
+                        }
                       />
                     </td>
                   );
