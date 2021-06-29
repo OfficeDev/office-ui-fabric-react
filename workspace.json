@@ -6,6 +6,10 @@
       "root": "apps/codesandbox-react-northstar-template",
       "projectType": "application"
     },
+    "codesandbox-react-components-template": {
+      "root": "apps/codesandbox-react-components-template",
+      "projectType": "application"
+    },
     "codesandbox-react-template": { "root": "apps/codesandbox-react-template", "projectType": "application" },
     "perf-test": { "root": "apps/perf-test", "projectType": "application" },
     "@fluentui/pr-deploy-site": { "root": "apps/pr-deploy-site", "projectType": "application" },
