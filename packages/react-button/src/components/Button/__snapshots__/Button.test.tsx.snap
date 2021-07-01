@@ -6,10 +6,10 @@ exports[`Button renders a default button 1`] = `
   onClick={[Function]}
   onKeyDown={[Function]}
 >
-  <span
+  <div
     className=""
   >
     This is a button
-  </span>
+  </div>
 </button>
 `;

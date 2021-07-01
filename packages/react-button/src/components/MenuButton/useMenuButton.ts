@@ -1,37 +1,25 @@
 import * as React from 'react';
-import { makeMergeProps, resolveShorthandProps } from '@fluentui/react-utilities';
-import { MenuButtonProps, MenuButtonShorthandPropsCompat, MenuButtonState } from './MenuButton.types';
-import { useMenuButtonState } from './useMenuButtonState';
+import { resolveShorthand } from '@fluentui/react-utilities';
+import { MenuButtonProps, MenuButtonShorthands, MenuButtonState } from './MenuButton.types';
+import { useButton } from '../Button/useButton';
+import { ChevronDownIcon } from './DefaultIcons';
 
 /**
  * Consts listing which props are shorthand props.
  */
-export const menuButtonShorthandPropsCompat: MenuButtonShorthandPropsCompat[] = ['children', 'icon', 'menuIcon'];
-
-const mergeProps = makeMergeProps<MenuButtonState>({ deepMerge: menuButtonShorthandPropsCompat });
+export const menuButtonShorthandProps: Array<keyof MenuButtonShorthands> = ['children', 'icon', 'menuIcon'];
 
 /**
  * Redefine the component factory, reusing button factory.
  */
-export const useMenuButton = (props: MenuButtonProps, ref: React.Ref<HTMLElement>, defaultProps?: MenuButtonProps) => {
-  // Note: because menu button's template and slots are different, we can't reuse
-  // those, but the useMenuButtonState hook can reuse useButtonState.
-  const state = mergeProps(
-    {
-      ref,
-      as: 'button',
-      // Button slots
-      icon: { as: 'span' },
-      // MenuButton slots
-      menuIcon: { as: 'span' },
-      // Non-slot props
-      size: 'medium',
+export const useMenuButton = (props: MenuButtonProps, ref: React.Ref<HTMLElement>): MenuButtonState => {
+  const buttonState = useButton(props, ref);
+  return {
+    ...buttonState,
+    components: {
+      ...buttonState.components,
+      menuIcon: ChevronDownIcon,
     },
-    defaultProps && resolveShorthandProps(defaultProps, menuButtonShorthandPropsCompat),
-    resolveShorthandProps(props, menuButtonShorthandPropsCompat),
-  ) as MenuButtonState;
-
-  useMenuButtonState(state);
-
-  return state;
+    menuIcon: resolveShorthand(props.menuIcon),
+  };
 };

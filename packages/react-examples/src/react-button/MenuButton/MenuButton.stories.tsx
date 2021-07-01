@@ -3,7 +3,7 @@ import { MenuButton, MenuButtonProps } from '@fluentui/react-button';
 import { Menu, MenuItem, MenuList, MenuProps, MenuTrigger } from '@fluentui/react-menu';
 import { buttonBaseProps } from '../Button/Button.stories';
 import { Playground } from '../Playground';
-import { PlaygroundProps } from '../Playground.types';
+import { PlaygroundProps, PropDefinition } from '../Playground.types';
 
 const ExampleMenu = (props: MenuButtonProps): JSX.Element => (
   <Menu>
@@ -19,7 +19,10 @@ const ExampleMenu = (props: MenuButtonProps): JSX.Element => (
 );
 
 const menuButtonProps: PlaygroundProps<MenuProps>['sections'] = [
-  { sectionName: 'Button props', propList: buttonBaseProps.filter(value => value.propName !== 'iconPosition') },
+  {
+    sectionName: 'Button props',
+    propList: buttonBaseProps.filter(value => value.propName !== 'iconPosition') as PropDefinition<MenuProps>[],
+  },
 ];
 
 export const MenuButtonPlayground = () => {

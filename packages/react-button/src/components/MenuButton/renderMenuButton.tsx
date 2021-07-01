@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { getSlotsCompat } from '@fluentui/react-utilities';
-import { MenuButtonState } from './MenuButton.types';
-import { menuButtonShorthandPropsCompat } from './useMenuButton';
+import { getSlots } from '@fluentui/react-utilities';
+import { MenuButtonState, MenuButtonShorthands } from './MenuButton.types';
+import { menuButtonShorthandProps } from './useMenuButton';
 
 /**
  * Renders a MenuButton component by passing the state defined props to the appropriate slots.
  */
 export const renderMenuButton = (state: MenuButtonState) => {
-  const { slots, slotProps } = getSlotsCompat(state, menuButtonShorthandPropsCompat);
+  const { slots, slotProps } = getSlots<MenuButtonShorthands>(state, menuButtonShorthandProps);
   const { iconOnly } = state;
 
   return (

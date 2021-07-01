@@ -4,39 +4,42 @@
 
 ```ts
 
-import { ComponentPropsCompat } from '@fluentui/react-utilities';
-import { ComponentStateCompat } from '@fluentui/react-utilities';
+import { ComponentProps } from '@fluentui/react-utilities';
+import { ComponentState } from '@fluentui/react-utilities';
 import * as React_2 from 'react';
-import { ShorthandPropsCompat } from '@fluentui/react-utilities';
 
 // @public
 export const Button: React_2.FunctionComponent<ButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type ButtonDefaultedProps = 'icon' | 'size';
-
-// @public (undocumented)
-export type ButtonProps = ComponentPropsCompat & React_2.ButtonHTMLAttributes<HTMLElement> & {
-    children?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
-    icon?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
+export interface ButtonProps extends ComponentProps<Partial<ButtonShorthands>>, Omit<React_2.ButtonHTMLAttributes<HTMLElement>, 'children'> {
     disabled?: boolean;
     iconPosition?: 'before' | 'after';
     primary?: boolean;
     size?: 'small' | 'medium' | 'large';
     subtle?: boolean;
     transparent?: boolean;
+}
+
+// @public
+export const buttonShorthandProps: Array<keyof ButtonShorthands>;
+
+// @public (undocumented)
+export type ButtonShorthands = {
+    children: React_2.HTMLAttributes<HTMLElement>;
+    icon: React_2.HTMLAttributes<HTMLElement>;
 };
 
 // @public (undocumented)
-export type ButtonShorthandPropsCompat = 'children' | 'icon';
-
-// @public
-export const buttonShorthandPropsCompat: ButtonShorthandPropsCompat[];
-
-// @public (undocumented)
-export interface ButtonState extends ComponentStateCompat<ButtonProps, ButtonShorthandPropsCompat, ButtonDefaultedProps> {
+export interface ButtonState extends ComponentState<ButtonShorthands>, Omit<React_2.ButtonHTMLAttributes<HTMLElement>, 'children'> {
+    disabled?: boolean;
     iconOnly?: boolean;
+    iconPosition?: 'before' | 'after';
+    primary?: boolean;
     ref: React_2.Ref<HTMLElement>;
+    size: 'small' | 'medium' | 'large';
+    subtle?: boolean;
+    transparent?: boolean;
 }
 
 // @public (undocumented)
@@ -59,44 +62,38 @@ export interface CheckedState {
 export const CompoundButton: React_2.ForwardRefExoticComponent<CompoundButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type CompoundButtonDefaultedProps = ButtonDefaultedProps | 'contentContainer' | 'secondaryContent';
-
-// @public (undocumented)
-export interface CompoundButtonProps extends ButtonProps {
-    contentContainer?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
-    secondaryContent?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
+export interface CompoundButtonProps extends ButtonProps, ComponentProps<Partial<CompoundButtonShorthands>> {
 }
 
-// @public (undocumented)
-export type CompoundButtonShorthandPropsCompat = ButtonShorthandPropsCompat | 'contentContainer' | 'secondaryContent';
-
 // @public
-export const compoundButtonShorthandPropsCompat: CompoundButtonShorthandPropsCompat[];
+export const compoundButtonShorthandProps: Array<keyof CompoundButtonShorthands>;
 
 // @public (undocumented)
-export interface CompoundButtonState extends ButtonState, ComponentStateCompat<CompoundButtonProps, CompoundButtonShorthandPropsCompat, CompoundButtonDefaultedProps> {
+export type CompoundButtonShorthands = ButtonShorthands & {
+    secondaryContent: React_2.HTMLAttributes<HTMLElement>;
+    contentContainer: React_2.HTMLAttributes<HTMLElement>;
+};
+
+// @public (undocumented)
+export interface CompoundButtonState extends Omit<ButtonState, 'components'>, ComponentState<CompoundButtonShorthands> {
 }
 
 // @public
 export const MenuButton: React_2.FunctionComponent<MenuButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type MenuButtonDefaultedProps = ButtonDefaultedProps | 'menuIcon';
+export type MenuButtonProps = Omit<ButtonProps, 'iconPosition'> & ComponentProps<Partial<MenuButtonShorthands>>;
+
+// @public
+export const menuButtonShorthandProps: Array<keyof MenuButtonShorthands>;
 
 // @public (undocumented)
-export type MenuButtonProps = Omit<ButtonProps, 'iconPosition'> & {
-    menuIcon?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
+export type MenuButtonShorthands = ButtonShorthands & {
+    menuIcon: React_2.HTMLAttributes<HTMLElement>;
 };
 
 // @public (undocumented)
-export type MenuButtonShorthandPropsCompat = ButtonShorthandPropsCompat | 'menuIcon';
-
-// @public
-export const menuButtonShorthandPropsCompat: MenuButtonShorthandPropsCompat[];
-
-// @public (undocumented)
-export interface MenuButtonState extends Omit<ButtonState, 'iconPosition'>, ComponentStateCompat<MenuButtonProps, MenuButtonShorthandPropsCompat, MenuButtonDefaultedProps> {
-}
+export type MenuButtonState = Omit<ButtonState, 'iconPosition'> & ComponentState<MenuButtonShorthands>;
 
 // @public
 const renderButton: (state: ButtonState) => JSX.Element;
@@ -115,23 +112,22 @@ export const renderMenuButton: (state: MenuButtonState) => JSX.Element;
 export const ToggleButton: React_2.ForwardRefExoticComponent<ToggleButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type ToggleButtonDefaultedProps = ButtonDefaultedProps;
-
-// @public (undocumented)
 export interface ToggleButtonProps extends ButtonProps {
     checked?: boolean;
     defaultChecked?: boolean;
 }
 
 // @public (undocumented)
-export type ToggleButtonShorthandPropsCompat = ButtonShorthandPropsCompat;
+export type ToggleButtonShorthands = ButtonShorthands;
 
 // @public (undocumented)
-export interface ToggleButtonState extends ButtonState, ComponentStateCompat<ToggleButtonProps, ToggleButtonShorthandPropsCompat, ToggleButtonDefaultedProps> {
+export interface ToggleButtonState extends ButtonState {
+    checked?: boolean;
+    defaultChecked?: boolean;
 }
 
 // @public
-export const useButton: (props: ButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: ButtonProps | undefined) => ButtonState;
+export const useButton: (props: ButtonProps, ref: React_2.Ref<HTMLElement>) => ButtonState;
 
 // @public
 export const useButtonState: (state: ButtonState) => ButtonState;
@@ -143,13 +139,13 @@ export const useButtonStyles: (state: ButtonState) => ButtonState;
 export const useChecked: <TState extends CheckedState>(state: TState) => void;
 
 // @public
-export const useCompoundButton: (props: CompoundButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: CompoundButtonProps | undefined) => CompoundButtonState;
+export const useCompoundButton: (props: CompoundButtonProps, ref: React_2.Ref<HTMLElement>) => CompoundButtonState;
 
 // @public (undocumented)
 export const useCompoundButtonStyles: (state: CompoundButtonState) => CompoundButtonState;
 
 // @public
-export const useMenuButton: (props: MenuButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: MenuButtonProps | undefined) => MenuButtonState;
+export const useMenuButton: (props: MenuButtonProps, ref: React_2.Ref<HTMLElement>) => MenuButtonState;
 
 // @public (undocumented)
 export const useMenuButtonState: (state: MenuButtonState) => MenuButtonState;
@@ -158,7 +154,7 @@ export const useMenuButtonState: (state: MenuButtonState) => MenuButtonState;
 export const useMenuButtonStyles: (state: MenuButtonState) => MenuButtonState;
 
 // @public (undocumented)
-export const useToggleButton: (props: ToggleButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: ToggleButtonProps | undefined) => ToggleButtonState;
+export const useToggleButton: (props: ToggleButtonProps, ref: React_2.Ref<HTMLElement>) => ToggleButtonState;
 
 // @public (undocumented)
 export const useToggleButtonStyles: (state: ToggleButtonState) => ToggleButtonState;

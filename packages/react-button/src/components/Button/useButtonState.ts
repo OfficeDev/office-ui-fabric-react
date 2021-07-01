@@ -27,7 +27,7 @@ export const useButtonState = (state: ButtonState): ButtonState => {
   };
 
   // Adjust props depending on the root type.
-  if (typeof as === 'string') {
+  if (as) {
     // Add 'role=button' and 'tabIndex=0' for all non-button elements.
     if (as !== 'button') {
       state.role = 'button';
@@ -38,12 +38,6 @@ export const useButtonState = (state: ButtonState): ButtonState => {
         state.onKeyDown = onNonAnchorOrButtonKeyDown;
       }
     }
-  }
-  // Add keydown event handler, 'role=button' and 'tabIndex=0' for all other elements.
-  else {
-    state.onKeyDown = onNonAnchorOrButtonKeyDown;
-    state.role = 'button';
-    state.tabIndex = disabled /*&& !disabledFocusable*/ ? undefined : 0;
   }
 
   // Disallow click event when component is disabled and eat events when disabledFocusable is set to true.
@@ -69,7 +63,5 @@ export const useButtonState = (state: ButtonState): ButtonState => {
 
   // Set the aria-disabled and disabled props correctly.
   state['aria-disabled'] = disabled /*|| disabledFocusable*/;
-  state.disabled = as === 'button' ? disabled /* && !disabledFocusable*/ : undefined;
-
   return state;
 };
