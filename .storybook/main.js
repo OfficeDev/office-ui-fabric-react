@@ -27,6 +27,14 @@ module.exports = /** @type {Pick<StorybookConfig,'addons' |'stories' |'webpackFi
     '@storybook/addon-a11y',
     '@storybook/addon-knobs/preset',
     'storybook-addon-performance',
+    {
+      name: '@storybook/addon-postcss',
+      options: {
+        postcssLoaderOptions: {
+          implementation: require('postcss'),
+        },
+      },
+    },
   ],
   webpackFinal: config => {
     const tsPaths = new TsconfigPathsPlugin({
@@ -70,9 +78,11 @@ function overrideDefaultBabelLoader(rules) {
 
   const loader = /** @type {LoaderObjectDef}*/ (rule.use[loaderIdx]);
 
-  if (!Object.prototype.hasOwnProperty.call(loader, 'options')) {
+  if (loader && !Object.prototype.hasOwnProperty.call(loader, 'options')) {
     throw new Error('storybook webpack rules changed');
   }
 
-  loader.options.customize = customLoaderPath;
+  if (loader) {
+    loader.options.customize = customLoaderPath;
+  }
 }
