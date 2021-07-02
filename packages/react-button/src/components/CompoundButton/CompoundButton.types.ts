@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ComponentProps, ComponentState } from '@fluentui/react-utilities';
-import { ButtonProps, ButtonShorthands, ButtonState } from '../Button/Button.types';
+import { ButtonProps, ButtonSlots, ButtonState } from '../Button/Button.types';
 
-export type CompoundButtonShorthands = ButtonShorthands & {
+export type CompoundButtonSlots = ButtonSlots & {
   /**
    * Second line of text that describes the action this button takes.
    */
@@ -16,11 +16,9 @@ export type CompoundButtonShorthands = ButtonShorthands & {
 /**
  * {@docCategory Button}
  */
-export interface CompoundButtonProps extends ButtonProps, ComponentProps<Partial<CompoundButtonShorthands>> {}
+export interface CompoundButtonProps extends ButtonProps, ComponentProps<Partial<CompoundButtonSlots>> {}
 
 /**
  * {@docCategory Button}
  */
-export interface CompoundButtonState
-  extends Omit<ButtonState, 'components'>,
-    ComponentState<CompoundButtonShorthands> {}
+export interface CompoundButtonState extends Omit<ButtonState, 'components'>, ComponentState<CompoundButtonSlots> {}

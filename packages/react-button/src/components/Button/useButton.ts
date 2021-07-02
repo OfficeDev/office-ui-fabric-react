@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { resolveShorthand } from '@fluentui/react-utilities';
-import { ButtonProps, ButtonShorthands, ButtonState } from './Button.types';
+import { ButtonProps, ButtonSlots, ButtonState } from './Button.types';
 import { useButtonState } from './useButtonState';
 
 /**
  * Consts listing which props are shorthand props.
  */
-export const buttonShorthandProps: Array<keyof ButtonShorthands> = ['children', 'icon'];
+export const buttonShorthandProps: Array<keyof ButtonSlots> = ['children', 'icon'];
 
 /**
  * Given user props, returns state and render function for a Button.

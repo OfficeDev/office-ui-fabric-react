@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { getCode, EnterKey, SpacebarKey } from '@fluentui/keyboard-key';
-import { ButtonState } from './Button.types';
+import { ButtonSlots, ButtonState, ButtonCommons } from './Button.types';
 
 /**
  * The useButton hook processes the Button draft state.
  * @param state - Button draft state to mutate.
  */
-export const useButtonState = (state: ButtonState): ButtonState => {
+export const useButtonState = (
+  state: Pick<ButtonState, keyof ButtonCommons | keyof ButtonSlots | 'iconOnly' | 'as'>,
+) => {
   const { as, children, disabled, icon, onClick, onKeyDown: onKeyDownCallback } = state;
 
   const receivedChildren = !!children?.children;

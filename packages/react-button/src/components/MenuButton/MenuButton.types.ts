@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ComponentProps, ComponentState } from '@fluentui/react-utilities';
-import { ButtonProps, ButtonShorthands, ButtonState } from '../Button/Button.types';
+import { ButtonProps, ButtonSlots, ButtonState } from '../Button/Button.types';
 
-export type MenuButtonShorthands = ButtonShorthands & {
+export type MenuButtonSlots = ButtonSlots & {
   /**
    * Menu icon that indicates that this button has a menu that can be expanded.
    */
@@ -12,9 +12,9 @@ export type MenuButtonShorthands = ButtonShorthands & {
 /**
  * {@docCategory Button}
  */
-export type MenuButtonProps = Omit<ButtonProps, 'iconPosition'> & ComponentProps<Partial<MenuButtonShorthands>>;
+export type MenuButtonProps = Omit<ButtonProps, 'iconPosition'> & ComponentProps<Partial<MenuButtonSlots>>;
 
 /**
  * {@docCategory Button}
  */
-export type MenuButtonState = Omit<ButtonState, 'iconPosition'> & ComponentState<MenuButtonShorthands>;
+export type MenuButtonState = Omit<ButtonState, 'iconPosition'> & ComponentState<MenuButtonSlots>;

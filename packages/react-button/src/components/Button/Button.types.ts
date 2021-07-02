@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ComponentProps, ComponentState } from '@fluentui/react-utilities';
 
-export type ButtonShorthands = {
+export type ButtonSlots = {
   // Temporarily declare children as a shorthand slot until #18471 is fixed
   children: React.HTMLAttributes<HTMLElement>;
 
@@ -17,12 +17,7 @@ export type ButtonShorthands = {
   // loader?: React.HTMLAttributes<HTMLSpanElement>;
 };
 
-/**
- * {@docCategory Button}
- */
-export interface ButtonProps
-  extends ComponentProps<Partial<ButtonShorthands>>,
-    Omit<React.ButtonHTMLAttributes<HTMLElement>, 'children'> {
+export interface ButtonCommons extends Omit<React.ButtonHTMLAttributes<HTMLElement>, 'children'> {
   // /**
   //  * A button can fill the width of its container.
   //  * @default false
@@ -80,7 +75,7 @@ export interface ButtonProps
    * A button supports different sizes.
    * @default 'medium'
    */
-  size?: 'small' | 'medium' | 'large';
+  size: 'small' | 'medium' | 'large';
 
   /**
    * A button can be styled to blend into its background and become less emphasized.
@@ -101,46 +96,12 @@ export interface ButtonProps
 /**
  * {@docCategory Button}
  */
-export interface ButtonState
-  extends ComponentState<ButtonShorthands>,
-    Omit<React.ButtonHTMLAttributes<HTMLElement>, 'children'> {
-  /**
-   * A button can show that it cannot be interacted with.
-   * @default false
-   */
-  disabled?: boolean;
-  /**
-   * A button can format its icon to appear before or after its content.
-   * @default 'before'
-   */
-  iconPosition?: 'before' | 'after';
-  /**
-   * A button can be styled to emphasize that it represents the primary action.
-   * Mutually exclusive with `outline`, `subtle` and `transparent`.
-   * @default false
-   */
-  primary?: boolean;
+export interface ButtonProps extends ComponentProps<Partial<ButtonSlots>>, Partial<ButtonCommons> {}
 
-  /**
-   * A button supports different sizes.
-   * @default 'medium'
-   */
-  size: 'small' | 'medium' | 'large';
-
-  /**
-   * A button can be styled to blend into its background and become less emphasized.
-   * @default false
-   * Mutually exclusive with `outline`, `primary` and `transparent`.
-   */
-  subtle?: boolean;
-
-  /**
-   * A button can be styled such that it has no background or border styling and is just emphasized through its
-   * content styling.
-   * Mutually exclusive with `outline`, `primary` and `subtle`.
-   * @default false
-   */
-  transparent?: boolean;
+/**
+ * {@docCategory Button}
+ */
+export interface ButtonState extends ComponentState<ButtonSlots>, ButtonCommons {
   /**
    * A button can contain only an icon.
    * @default false

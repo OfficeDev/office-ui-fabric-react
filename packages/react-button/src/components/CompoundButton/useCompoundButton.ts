@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { resolveShorthand } from '@fluentui/react-utilities';
-import { CompoundButtonProps, CompoundButtonShorthands, CompoundButtonState } from './CompoundButton.types';
+import { CompoundButtonProps, CompoundButtonSlots, CompoundButtonState } from './CompoundButton.types';
 import { useButton } from '../Button/useButton';
 
 /**
  * Consts listing which props are shorthand props.
  */
-export const compoundButtonShorthandProps: Array<keyof CompoundButtonShorthands> = [
+export const compoundButtonShorthandProps: Array<keyof CompoundButtonSlots> = [
   'children',
   'contentContainer',
   'icon',
