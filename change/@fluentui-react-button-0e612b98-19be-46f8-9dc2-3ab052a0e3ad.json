@@ -1,0 +1,7 @@
+{
+  "type": "prerelease",
+  "comment": "Updates prop mergin mechanism",
+  "packageName": "@fluentui/react-button",
+  "email": "bsunderhus@microsoft.com",
+  "dependentChangeType": "patch"
+}
