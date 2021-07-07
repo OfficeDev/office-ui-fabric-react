@@ -31,6 +31,14 @@
       "factory": "./src/migrations/update-12-4-0/remove-eslint-project-config-if-no-type-checking-rules",
       "package": "@nrwl/linter",
       "name": "remove-eslint-project-config-if-no-type-checking-rules"
+    },
+    {
+      "version": "12.5.0-beta.1",
+      "description": "Rename the workspace-schematic script into workspace-generator script",
+      "factory": "./src/migrations/update-12-5-0/add-target-dependencies",
+      "cli": "nx",
+      "package": "@nrwl/workspace",
+      "name": "add-target-dependencies"
     }
   ]
 }

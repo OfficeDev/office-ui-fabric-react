@@ -12,8 +12,8 @@ import {
   logger,
   writeJson,
   updateProjectConfiguration,
+  serializeJson,
 } from '@nrwl/devkit';
-import { serializeJson } from '@nrwl/workspace';
 import { updateJestConfig } from '@nrwl/jest/src/generators/jest-project/lib/update-jestconfig';
 import * as path from 'path';
 
