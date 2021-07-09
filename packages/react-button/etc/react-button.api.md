@@ -4,37 +4,38 @@
 
 ```ts
 
-import { ComponentPropsCompat } from '@fluentui/react-utilities';
-import { ComponentStateCompat } from '@fluentui/react-utilities';
+import { ComponentProps } from '@fluentui/react-utilities';
+import { ComponentState } from '@fluentui/react-utilities';
 import * as React_2 from 'react';
-import { ShorthandPropsCompat } from '@fluentui/react-utilities';
 
 // @public
 export const Button: React_2.FunctionComponent<ButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type ButtonDefaultedProps = 'icon' | 'size';
-
-// @public (undocumented)
-export type ButtonProps = ComponentPropsCompat & React_2.ButtonHTMLAttributes<HTMLElement> & {
-    children?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
-    icon?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
+export interface ButtonCommons extends Omit<React_2.ButtonHTMLAttributes<HTMLElement>, 'children'> {
     disabled?: boolean;
     iconPosition?: 'before' | 'after';
     primary?: boolean;
-    size?: 'small' | 'medium' | 'large';
+    size: 'small' | 'medium' | 'large';
     subtle?: boolean;
     transparent?: boolean;
+}
+
+// @public (undocumented)
+export interface ButtonProps extends ComponentProps<Partial<ButtonSlots>>, Partial<ButtonCommons> {
+}
+
+// @public
+export const buttonShorthandProps: Array<keyof ButtonSlots>;
+
+// @public (undocumented)
+export type ButtonSlots = {
+    children: React_2.HTMLAttributes<HTMLElement>;
+    icon: React_2.HTMLAttributes<HTMLElement>;
 };
 
 // @public (undocumented)
-export type ButtonShorthandPropsCompat = 'children' | 'icon';
-
-// @public
-export const buttonShorthandPropsCompat: ButtonShorthandPropsCompat[];
-
-// @public (undocumented)
-export interface ButtonState extends ComponentStateCompat<ButtonProps, ButtonShorthandPropsCompat, ButtonDefaultedProps> {
+export interface ButtonState extends ComponentState<ButtonSlots>, ButtonCommons {
     iconOnly?: boolean;
     ref: React_2.Ref<HTMLElement>;
 }
@@ -59,44 +60,38 @@ export interface CheckedState {
 export const CompoundButton: React_2.ForwardRefExoticComponent<CompoundButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type CompoundButtonDefaultedProps = ButtonDefaultedProps | 'contentContainer' | 'secondaryContent';
-
-// @public (undocumented)
-export interface CompoundButtonProps extends ButtonProps {
-    contentContainer?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
-    secondaryContent?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
+export interface CompoundButtonProps extends ButtonProps, ComponentProps<Partial<CompoundButtonSlots>> {
 }
 
-// @public (undocumented)
-export type CompoundButtonShorthandPropsCompat = ButtonShorthandPropsCompat | 'contentContainer' | 'secondaryContent';
-
 // @public
-export const compoundButtonShorthandPropsCompat: CompoundButtonShorthandPropsCompat[];
+export const compoundButtonShorthandProps: Array<keyof CompoundButtonSlots>;
 
 // @public (undocumented)
-export interface CompoundButtonState extends ButtonState, ComponentStateCompat<CompoundButtonProps, CompoundButtonShorthandPropsCompat, CompoundButtonDefaultedProps> {
+export type CompoundButtonSlots = ButtonSlots & {
+    secondaryContent: React_2.HTMLAttributes<HTMLElement>;
+    contentContainer: React_2.HTMLAttributes<HTMLElement>;
+};
+
+// @public (undocumented)
+export interface CompoundButtonState extends Omit<ButtonState, 'components'>, ComponentState<CompoundButtonSlots> {
 }
 
 // @public
 export const MenuButton: React_2.FunctionComponent<MenuButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type MenuButtonDefaultedProps = ButtonDefaultedProps | 'menuIcon';
+export type MenuButtonProps = Omit<ButtonProps, 'iconPosition'> & ComponentProps<Partial<MenuButtonSlots>>;
+
+// @public
+export const menuButtonShorthandProps: Array<keyof MenuButtonSlots>;
 
 // @public (undocumented)
-export type MenuButtonProps = Omit<ButtonProps, 'iconPosition'> & {
-    menuIcon?: ShorthandPropsCompat<React_2.HTMLAttributes<HTMLElement>>;
+export type MenuButtonSlots = ButtonSlots & {
+    menuIcon: React_2.HTMLAttributes<HTMLElement>;
 };
 
 // @public (undocumented)
-export type MenuButtonShorthandPropsCompat = ButtonShorthandPropsCompat | 'menuIcon';
-
-// @public
-export const menuButtonShorthandPropsCompat: MenuButtonShorthandPropsCompat[];
-
-// @public (undocumented)
-export interface MenuButtonState extends Omit<ButtonState, 'iconPosition'>, ComponentStateCompat<MenuButtonProps, MenuButtonShorthandPropsCompat, MenuButtonDefaultedProps> {
-}
+export type MenuButtonState = Omit<ButtonState, 'iconPosition'> & ComponentState<MenuButtonSlots>;
 
 // @public
 const renderButton: (state: ButtonState) => JSX.Element;
@@ -115,26 +110,27 @@ export const renderMenuButton: (state: MenuButtonState) => JSX.Element;
 export const ToggleButton: React_2.ForwardRefExoticComponent<ToggleButtonProps & React_2.RefAttributes<HTMLElement>>;
 
 // @public (undocumented)
-export type ToggleButtonDefaultedProps = ButtonDefaultedProps;
-
-// @public (undocumented)
-export interface ToggleButtonProps extends ButtonProps {
+export interface ToggleButtonCommons {
     checked?: boolean;
     defaultChecked?: boolean;
 }
 
 // @public (undocumented)
-export type ToggleButtonShorthandPropsCompat = ButtonShorthandPropsCompat;
+export interface ToggleButtonProps extends ButtonProps, ToggleButtonCommons {
+}
 
 // @public (undocumented)
-export interface ToggleButtonState extends ButtonState, ComponentStateCompat<ToggleButtonProps, ToggleButtonShorthandPropsCompat, ToggleButtonDefaultedProps> {
+export type ToggleButtonShorthands = ButtonSlots;
+
+// @public (undocumented)
+export interface ToggleButtonState extends ButtonState, ToggleButtonCommons {
 }
 
 // @public
-export const useButton: (props: ButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: ButtonProps | undefined) => ButtonState;
+export const useButton: (props: ButtonProps, ref: React_2.Ref<HTMLElement>) => ButtonState;
 
 // @public
-export const useButtonState: (state: ButtonState) => ButtonState;
+export const useButtonState: (state: Pick<ButtonState, keyof ButtonCommons | keyof ButtonSlots | 'iconOnly' | 'as'>) => Pick<ButtonState, "children" | "autoFocus" | "disabled" | "form" | "formAction" | "formEncType" | "formMethod" | "formNoValidate" | "formTarget" | "name" | "type" | "value" | "defaultChecked" | "defaultValue" | "suppressContentEditableWarning" | "suppressHydrationWarning" | "accessKey" | "className" | "contentEditable" | "contextMenu" | "dir" | "draggable" | "hidden" | "id" | "lang" | "placeholder" | "slot" | "spellCheck" | "style" | "tabIndex" | "title" | "translate" | "radioGroup" | "role" | "about" | "datatype" | "inlist" | "prefix" | "property" | "resource" | "typeof" | "vocab" | "autoCapitalize" | "autoCorrect" | "autoSave" | "color" | "itemProp" | "itemScope" | "itemType" | "itemID" | "itemRef" | "results" | "security" | "unselectable" | "inputMode" | "is" | "aria-activedescendant" | "aria-atomic" | "aria-autocomplete" | "aria-busy" | "aria-checked" | "aria-colcount" | "aria-colindex" | "aria-colspan" | "aria-controls" | "aria-current" | "aria-describedby" | "aria-details" | "aria-disabled" | "aria-dropeffect" | "aria-errormessage" | "aria-expanded" | "aria-flowto" | "aria-grabbed" | "aria-haspopup" | "aria-hidden" | "aria-invalid" | "aria-keyshortcuts" | "aria-label" | "aria-labelledby" | "aria-level" | "aria-live" | "aria-modal" | "aria-multiline" | "aria-multiselectable" | "aria-orientation" | "aria-owns" | "aria-placeholder" | "aria-posinset" | "aria-pressed" | "aria-readonly" | "aria-relevant" | "aria-required" | "aria-roledescription" | "aria-rowcount" | "aria-rowindex" | "aria-rowspan" | "aria-selected" | "aria-setsize" | "aria-sort" | "aria-valuemax" | "aria-valuemin" | "aria-valuenow" | "aria-valuetext" | "dangerouslySetInnerHTML" | "onCopy" | "onCopyCapture" | "onCut" | "onCutCapture" | "onPaste" | "onPasteCapture" | "onCompositionEnd" | "onCompositionEndCapture" | "onCompositionStart" | "onCompositionStartCapture" | "onCompositionUpdate" | "onCompositionUpdateCapture" | "onFocus" | "onFocusCapture" | "onBlur" | "onBlurCapture" | "onChange" | "onChangeCapture" | "onBeforeInput" | "onBeforeInputCapture" | "onInput" | "onInputCapture" | "onReset" | "onResetCapture" | "onSubmit" | "onSubmitCapture" | "onInvalid" | "onInvalidCapture" | "onLoad" | "onLoadCapture" | "onError" | "onErrorCapture" | "onKeyDown" | "onKeyDownCapture" | "onKeyPress" | "onKeyPressCapture" | "onKeyUp" | "onKeyUpCapture" | "onAbort" | "onAbortCapture" | "onCanPlay" | "onCanPlayCapture" | "onCanPlayThrough" | "onCanPlayThroughCapture" | "onDurationChange" | "onDurationChangeCapture" | "onEmptied" | "onEmptiedCapture" | "onEncrypted" | "onEncryptedCapture" | "onEnded" | "onEndedCapture" | "onLoadedData" | "onLoadedDataCapture" | "onLoadedMetadata" | "onLoadedMetadataCapture" | "onLoadStart" | "onLoadStartCapture" | "onPause" | "onPauseCapture" | "onPlay" | "onPlayCapture" | "onPlaying" | "onPlayingCapture" | "onProgress" | "onProgressCapture" | "onRateChange" | "onRateChangeCapture" | "onSeeked" | "onSeekedCapture" | "onSeeking" | "onSeekingCapture" | "onStalled" | "onStalledCapture" | "onSuspend" | "onSuspendCapture" | "onTimeUpdate" | "onTimeUpdateCapture" | "onVolumeChange" | "onVolumeChangeCapture" | "onWaiting" | "onWaitingCapture" | "onAuxClick" | "onAuxClickCapture" | "onClick" | "onClickCapture" | "onContextMenu" | "onContextMenuCapture" | "onDoubleClick" | "onDoubleClickCapture" | "onDrag" | "onDragCapture" | "onDragEnd" | "onDragEndCapture" | "onDragEnter" | "onDragEnterCapture" | "onDragExit" | "onDragExitCapture" | "onDragLeave" | "onDragLeaveCapture" | "onDragOver" | "onDragOverCapture" | "onDragStart" | "onDragStartCapture" | "onDrop" | "onDropCapture" | "onMouseDown" | "onMouseDownCapture" | "onMouseEnter" | "onMouseLeave" | "onMouseMove" | "onMouseMoveCapture" | "onMouseOut" | "onMouseOutCapture" | "onMouseOver" | "onMouseOverCapture" | "onMouseUp" | "onMouseUpCapture" | "onSelect" | "onSelectCapture" | "onTouchCancel" | "onTouchCancelCapture" | "onTouchEnd" | "onTouchEndCapture" | "onTouchMove" | "onTouchMoveCapture" | "onTouchStart" | "onTouchStartCapture" | "onPointerDown" | "onPointerDownCapture" | "onPointerMove" | "onPointerMoveCapture" | "onPointerUp" | "onPointerUpCapture" | "onPointerCancel" | "onPointerCancelCapture" | "onPointerEnter" | "onPointerEnterCapture" | "onPointerLeave" | "onPointerLeaveCapture" | "onPointerOver" | "onPointerOverCapture" | "onPointerOut" | "onPointerOutCapture" | "onGotPointerCapture" | "onGotPointerCaptureCapture" | "onLostPointerCapture" | "onLostPointerCaptureCapture" | "onScroll" | "onScrollCapture" | "onWheel" | "onWheelCapture" | "onAnimationStart" | "onAnimationStartCapture" | "onAnimationEnd" | "onAnimationEndCapture" | "onAnimationIteration" | "onAnimationIterationCapture" | "onTransitionEnd" | "onTransitionEndCapture" | "icon" | "as" | "iconPosition" | "primary" | "size" | "subtle" | "transparent" | "iconOnly">;
 
 // @public (undocumented)
 export const useButtonStyles: (state: ButtonState) => ButtonState;
@@ -143,13 +139,13 @@ export const useButtonStyles: (state: ButtonState) => ButtonState;
 export const useChecked: <TState extends CheckedState>(state: TState) => void;
 
 // @public
-export const useCompoundButton: (props: CompoundButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: CompoundButtonProps | undefined) => CompoundButtonState;
+export const useCompoundButton: (props: CompoundButtonProps, ref: React_2.Ref<HTMLElement>) => CompoundButtonState;
 
 // @public (undocumented)
 export const useCompoundButtonStyles: (state: CompoundButtonState) => CompoundButtonState;
 
 // @public
-export const useMenuButton: (props: MenuButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: MenuButtonProps | undefined) => MenuButtonState;
+export const useMenuButton: (props: MenuButtonProps, ref: React_2.Ref<HTMLElement>) => MenuButtonState;
 
 // @public (undocumented)
 export const useMenuButtonState: (state: MenuButtonState) => MenuButtonState;
@@ -158,7 +154,7 @@ export const useMenuButtonState: (state: MenuButtonState) => MenuButtonState;
 export const useMenuButtonStyles: (state: MenuButtonState) => MenuButtonState;
 
 // @public (undocumented)
-export const useToggleButton: (props: ToggleButtonProps, ref: React_2.Ref<HTMLElement>, defaultProps?: ToggleButtonProps | undefined) => ToggleButtonState;
+export const useToggleButton: (props: ToggleButtonProps, ref: React_2.Ref<HTMLElement>) => ToggleButtonState;
 
 // @public (undocumented)
 export const useToggleButtonStyles: (state: ToggleButtonState) => ToggleButtonState;
