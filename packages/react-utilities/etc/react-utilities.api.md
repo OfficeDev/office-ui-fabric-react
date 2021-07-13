@@ -302,6 +302,11 @@ export interface UseBooleanCallbacks {
 // @public
 export function useConst<T>(initialValue: T | (() => T)): T;
 
+// Warning: (ae-forgotten-export) The symbol "UseControllableStateOptions" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const useControllableState: <State>(options: UseControllableStateOptions<State>) => [State, React_2.Dispatch<React_2.SetStateAction<State>>];
+
 // Warning: (ae-forgotten-export) The symbol "DefaultValue" needs to be exported by the entry point index.d.ts
 //
 // @public
