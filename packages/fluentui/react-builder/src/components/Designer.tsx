@@ -1,16 +1,18 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import DocumentTitle from 'react-document-title';
-import { Box, Text, Button, Header, Tooltip, Menu, tabListBehavior } from '@fluentui/react-northstar';
-import { FilesCodeIcon, AcceptIcon, AddIcon, MenuIcon } from '@fluentui/react-icons-northstar';
+import { Box, Text, Button, Header, Tooltip, Menu, Label } from '@fluentui/react-northstar';
+import { FilesCodeIcon, AcceptIcon, AddIcon, MenuIcon, ExclamationCircleIcon } from '@fluentui/react-icons-northstar';
 import { EventListener } from '@fluentui/react-component-event-listener';
 import { renderElementToJSX, CodeSandboxExporter, CodeSandboxState } from '@fluentui/docs-components';
 import { componentInfoContext } from '../componentInfo/componentInfoContext';
+import { tabListBehavior } from '@fluentui/accessibility';
 // import Anatomy from './Anatomy';
 import { BrowserWindow } from './BrowserWindow';
 import { Canvas } from './Canvas';
 import { Description } from './Description';
 import { Knobs } from './Knobs';
-import { List } from './List';
+import { ComponentList } from './ComponentList';
 import { Toolbar } from './Toolbar';
 import { jsonTreeFindElement, renderJSONTreeToJSXElement, getCodeSandboxInfo, resolveDraggingElement } from '../config';
 import { writeTreeToStore, writeTreeToURL } from '../utils/treeStore';
@@ -20,8 +22,9 @@ import { GetShareableLink } from './GetShareableLink';
 import { ErrorBoundary } from './ErrorBoundary';
 import { InsertComponent } from './InsertComponent';
 import { debug, useDesignerState } from '../state';
-import { useAxeOnElement, useMode } from '../hooks';
-import { ErrorPanel } from './ErrorPanel';
+import { useMode } from '../hooks';
+import { AccessibilityError } from '../accessibility/types';
+import { useAxeOnElement } from '../hooks/useAxeOnElement';
 
 const HEADER_HEIGHT = '3rem';
 
@@ -93,7 +96,14 @@ export const Designer: React.FunctionComponent = () => {
   const [showJSONTree, handleShowJSONTreeChange] = React.useState(false);
   const [headerMessage, setHeaderMessage] = React.useState('');
 
-  const [axeErrors, runAxeOnElement] = useAxeOnElement();
+  React.useEffect(() => {
+    if (state.jsonTreeOrigin === 'store') {
+      writeTreeToStore(state.jsonTree);
+    }
+  }, [state.jsonTree, state.jsonTreeOrigin]);
+
+  // const accessibilityErrors = useAxeOnElements();
+  const [selectedComponentAccessibilityErrors, runAxeOnElement] = useAxeOnElement();
 
   React.useEffect(() => {
     if (state.selectedJSONTreeElementUuid) {
@@ -101,17 +111,10 @@ export const Designer: React.FunctionComponent = () => {
     }
   }, [state.selectedJSONTreeElementUuid, runAxeOnElement]);
 
-  React.useEffect(() => {
-    if (state.jsonTreeOrigin === 'store') {
-      writeTreeToStore(state.jsonTree);
-    }
-  }, [state.jsonTree, state.jsonTreeOrigin]);
-
   const {
     draggingElement,
     jsonTree,
     jsonTreeOrigin,
-    /* selectedComponentInfo, */
     selectedJSONTreeElementUuid,
     enabledVirtualCursor,
     showCode,
@@ -119,6 +122,7 @@ export const Designer: React.FunctionComponent = () => {
     activeTab,
     codeError,
     insertComponent,
+    accessibilityErrors,
   } = state;
 
   const selectedJSONTreeElement = jsonTreeFindElement(jsonTree, selectedJSONTreeElementUuid);
@@ -187,8 +191,6 @@ export const Designer: React.FunctionComponent = () => {
   }, [dispatch]);
 
   const handleDropPositionChange = React.useCallback((dropParent, dropIndex) => {
-    debug('handleDropPositionChange', { dropIndex, dropParent });
-
     dragAndDropData.current.dropParent = dropParent;
     dragAndDropData.current.dropIndex = dropIndex;
   }, []);
@@ -286,6 +288,44 @@ export const Designer: React.FunctionComponent = () => {
     window.history.pushState('', document.title, url);
   }, [dispatch]);
 
+  const handleOpenAddComponentDialog = React.useCallback(
+    (uuid: string, where: string) => {
+      dispatch({ type: 'OPEN_ADD_DIALOG', uuid, where });
+    },
+    [dispatch],
+  );
+
+  const handleCloseAddComponentDialog = React.useCallback(() => {
+    dispatch({ type: 'CLOSE_ADD_DIALOG' });
+  }, [dispatch]);
+  const handleAddComponent = React.useCallback(
+    (component: string, module: string) => {
+      dispatch({ type: 'ADD_COMPONENT', component, module });
+
+      console.log(component);
+    },
+    [dispatch],
+  );
+
+  const selectedComponent =
+    !draggingElement &&
+    mode !== 'use' &&
+    selectedJSONTreeElement?.uuid &&
+    selectedJSONTreeElement.uuid !== 'builder-root' &&
+    selectedJSONTreeElement;
+
+  const handleAccessibilityErrorChange = React.useCallback(
+    (jsonTreeElement: JSONTreeElement, elementAccessibilityErrors: AccessibilityError[]) => {
+      dispatch({
+        type: 'ACCESSIBILITY_CHANGE',
+        component: jsonTreeElement,
+        componentAccessibilityErrors: elementAccessibilityErrors,
+      });
+    },
+    [dispatch],
+  );
+
+  const codeSandboxData = getCodeSandboxInfo(jsonTree, renderElementToJSX(renderJSONTreeToJSXElement(jsonTree)));
   const hotkeys = {
     'Ctrl+c': () => {
       if (state.selectedJSONTreeElementUuid && state.selectedJSONTreeElementUuid !== 'builder-root') {
@@ -332,32 +372,18 @@ export const Designer: React.FunctionComponent = () => {
     hotkeys.hasOwnProperty(command) && hotkeys[command]();
   };
 
-  const handleOpenAddComponentDialog = React.useCallback(
-    (uuid: string, where: string) => {
-      dispatch({ type: 'OPEN_ADD_DIALOG', uuid, where });
-    },
-    [dispatch],
-  );
+  const accessErrorLabelStyle = {
+    position: 'relative',
+    right: '5px',
+    top: '-5px',
+    transform: 'rotate(0deg);',
+    border: 'solid 2px white',
+    height: '18px',
+    width: '18px',
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
 
-  const handleCloseAddComponentDialog = React.useCallback(() => {
-    dispatch({ type: 'CLOSE_ADD_DIALOG' });
-  }, [dispatch]);
-
-  const handleAddComponent = React.useCallback(
-    (component: string, module: string) => {
-      dispatch({ type: 'ADD_COMPONENT', component, module });
-    },
-    [dispatch],
-  );
-
-  const selectedComponent =
-    !draggingElement &&
-    mode !== 'use' &&
-    selectedJSONTreeElement?.uuid &&
-    selectedJSONTreeElement.uuid !== 'builder-root' &&
-    selectedJSONTreeElement;
-
-  const codeSandboxData = getCodeSandboxInfo(jsonTree, renderElementToJSX(renderJSONTreeToJSXElement(jsonTree)));
   return (
     <div
       style={{
@@ -423,91 +449,166 @@ export const Designer: React.FunctionComponent = () => {
       />
 
       <div style={{ display: 'flex', flex: 1, minWidth: '10rem', overflow: 'hidden' }}>
-        <Menu
-          accessibility={tabListBehavior}
-          vertical
-          styles={({ theme }) => ({
-            background: '#FAF9F8',
-            border: '0px',
-            borderRight: `1px solid ${theme.siteVariables.colorScheme.default.border2}`,
-            borderRadius: '0px',
-            display: 'flex',
-            flexDirection: 'column',
-            width: '3.4rem',
-            transition: 'opacity 0.2s',
-            position: 'relative',
-            padding: '0px',
-            ...(mode === 'use' && {
-              pointerEvents: 'none',
-              opacity: 0,
-            }),
-          })}
-        >
-          <NavBarItem
-            title="Add components"
-            isSelected={activeTab === 'add'}
-            icon={<AddIcon size="large" outline />}
-            onClickHandler={() => selectActiveTab('add')}
-          />
+        <div style={{ display: 'flex', minWidth: '1rem', overflow: 'auto' }}>
+          <Menu
+            accessibility={tabListBehavior}
+            vertical
+            styles={({ theme }) => ({
+              background: '#FAF9F8',
+              border: '0px',
+              borderRight: `1px solid ${theme.siteVariables.colorScheme.default.border2}`,
+              borderRadius: '0px',
+              display: 'flex',
+              flexDirection: 'column',
+              width: '3.4rem',
+              transition: 'opacity 0.2s',
+              position: 'relative',
+              padding: '0px',
+              ...(mode === 'use' && {
+                pointerEvents: 'none',
+                opacity: 0,
+              }),
+            })}
+          >
+            <NavBarItem
+              title="Add components"
+              isSelected={activeTab === 'add'}
+              icon={<AddIcon size="large" outline />}
+              onClickHandler={() => selectActiveTab('add')}
+            />
 
-          <NavBarItem
-            title="Navigator"
-            isSelected={activeTab === 'nav'}
-            icon={<MenuIcon size="large" outline />}
-            onClickHandler={() => selectActiveTab('nav')}
-          />
-        </Menu>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            minWidth: '22.85rem',
-            transition: 'opacity 0.2s',
-            ...(mode === 'use' && {
-              pointerEvents: 'none',
-              opacity: 0,
-            }),
-          }}
-        >
+            <NavBarItem
+              title="Accessibility"
+              isSelected={activeTab === 'accessibility'}
+              icon={
+                accessibilityErrors.length !== 0 ? (
+                  <>
+                    {' '}
+                    <ExclamationCircleIcon size="large" outline />
+                    <Label
+                      design={accessErrorLabelStyle}
+                      color={'red'}
+                      content={<Text size="smaller">{accessibilityErrors.length}</Text>}
+                      circular
+                    />{' '}
+                  </>
+                ) : (
+                  <ExclamationCircleIcon size="large" outline />
+                )
+              }
+              onClickHandler={() => selectActiveTab('accessibility')}
+            />
+
+            <NavBarItem
+              title="Navigator"
+              isSelected={activeTab === 'nav'}
+              icon={<MenuIcon size="large" outline />}
+              onClickHandler={() => selectActiveTab('nav')}
+            />
+          </Menu>
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              padding: '0 10px 0 20px',
-              borderBottom: '1px solid #E1DFDD',
+              flexDirection: 'column',
+              minWidth: '22.85rem',
+              transition: 'opacity 0.2s',
+              ...(mode === 'use' && {
+                pointerEvents: 'none',
+                opacity: 0,
+              }),
             }}
           >
-            <Header as="h2" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-              {activeTab === 'add' ? 'Add components' : 'Navigator'}
-            </Header>
-          </div>
-          {activeTab === 'add' && (
-            <div>
-              <List style={{ overflowY: 'auto' }} onDragStart={handleDragStart} />
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0 10px 0 20px',
+                borderBottom: '1px solid #E1DFDD',
+              }}
+            >
+              <Header as="h2" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                {activeTab === 'add' ? 'Add components' : activeTab === 'accessibility' ? 'Accessibility' : 'Navigator'}
+              </Header>
             </div>
-          )}
-          {activeTab === 'nav' && (
-            <div>
-              {(!jsonTree?.props?.children || jsonTree?.props?.children?.length === 0) && (
-                <Button
-                  text
-                  content="Insert first component"
-                  fluid
-                  onClick={() => handleOpenAddComponentDialog('', 'first')}
+            {activeTab === 'add' && (
+              <div>
+                <ComponentList style={{ overflowY: 'auto' }} onDragStart={handleDragStart} />
+              </div>
+            )}
+            {activeTab === 'accessibility' && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '0 2em 0 2em',
+                  maxWidth: '5em',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Text size={'small'}>
+                  To learn more about best practices for accessibility, visit
+                  <a href="https://www.microsoft.com/en-us/accessibility/" target="_blank" rel="noopener noreferrer">
+                    {' https://www.microsoft.com/en-us/accessibility/'}
+                  </a>
+                  <br />
+                  <br />
+                </Text>
+                {_.isEmpty(accessibilityErrors) ? (
+                  <Text weight={'bold'}>No accessibility errors automatically detected.</Text>
+                ) : (
+                  // group the accesssibility errors (if they exist)
+                  // const groupedAccessibilityErrors = _.groupBy(accessibilityErrors, error => error.severity);
+                  Object.keys(_.groupBy(accessibilityErrors, error => error.severity)).map(severityLevel => (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <Header as="h3">{severityLevel}</Header>
+                      {_.groupBy(accessibilityErrors, error => error.severity)[severityLevel].map(error => (
+                        <div
+                          style={{
+                            minWidth: '2em',
+                          }}
+                        >
+                          <ul>
+                            <li>{error.elementUuid}</li>
+                            <li>{error.error}</li>
+                            <li>Source: {error.source}</li>
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+            {activeTab === 'nav' && (
+              <div>
+                {(!jsonTree?.props?.children || jsonTree?.props?.children?.length === 0) && (
+                  <Button
+                    text
+                    content="Insert first component"
+                    fluid
+                    onClick={() => handleOpenAddComponentDialog('', 'first')}
+                  />
+                )}
+                <ComponentTree
+                  tree={jsonTree}
+                  selectedComponent={selectedComponent}
+                  selectedComponentAccessibilityErrors={selectedComponentAccessibilityErrors}
+                  onSelectComponent={handleSelectComponent}
+                  onCloneComponent={handleCloneComponent}
+                  onMoveComponent={handleMoveComponent}
+                  onDeleteSelectedComponent={handleDeleteSelectedComponent}
+                  onAddComponent={handleOpenAddComponentDialog}
                 />
-              )}
-              <ComponentTree
-                tree={jsonTree}
-                selectedComponent={selectedComponent}
-                onSelectComponent={handleSelectComponent}
-                onCloneComponent={handleCloneComponent}
-                onMoveComponent={handleMoveComponent}
-                onDeleteSelectedComponent={handleDeleteSelectedComponent}
-                onAddComponent={handleOpenAddComponentDialog}
-              />
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
+
         <div
           style={{
             display: 'flex',
@@ -593,6 +694,8 @@ export const Designer: React.FunctionComponent = () => {
                   role="main"
                   inUseMode={mode === 'use'}
                   setHeaderMessage={setHeaderMessage}
+                  selectedComponentAccessibilityErrors={selectedComponentAccessibilityErrors}
+                  onAccessibilityErrors={handleAccessibilityErrorChange}
                 />
               </ErrorBoundary>
             </BrowserWindow>
@@ -660,14 +763,15 @@ export const Designer: React.FunctionComponent = () => {
             }}
           >
             <Description selectedJSONTreeElement={selectedJSONTreeElement} componentInfo={selectedComponentInfo} />
-            {/* <Anatomy componentInfo={selectedComponentInfo} /> */}
-            {!!axeErrors.length && <ErrorPanel axeErrors={axeErrors} />}
+
             {selectedJSONTreeElement && (
               <Knobs
                 onPropChange={handlePropChange}
                 onPropDelete={handlePropDelete}
                 info={selectedComponentInfo}
                 jsonTreeElement={selectedJSONTreeElement}
+                elementAccessibilityErrors={selectedComponentAccessibilityErrors}
+                onAccessibilityErrorChange={handleAccessibilityErrorChange}
               />
             )}
           </div>
