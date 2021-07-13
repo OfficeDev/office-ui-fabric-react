@@ -6,7 +6,16 @@
 
 import { ComponentPropsCompat } from '@fluentui/react-utilities';
 import { ComponentStateCompat } from '@fluentui/react-utilities';
+import { MakeStylesStyleFunctionRule } from '@fluentui/make-styles';
 import * as React_2 from 'react';
+import { Theme } from '@fluentui/react-theme';
+
+// @public
+export const Display: React_2.ForwardRefExoticComponent<DisplayProps & React_2.RefAttributes<HTMLElement>>;
+
+// @public
+export interface DisplayProps extends Omit<TextProps, 'font' | 'size'> {
+}
 
 // @public
 export const renderText: (state: TextState) => JSX.Element;
@@ -38,6 +47,19 @@ export interface TextProps extends ComponentPropsCompat, React_2.HTMLAttributes<
 export interface TextState extends ComponentStateCompat<TextProps, TextDefaultedProps> {
     ref: React_2.Ref<HTMLElement>;
 }
+
+// @public
+export const typographyStyles: {
+    caption: MakeStylesStyleFunctionRule<Theme>;
+    body: MakeStylesStyleFunctionRule<Theme>;
+    subheadline: MakeStylesStyleFunctionRule<Theme>;
+    headline: MakeStylesStyleFunctionRule<Theme>;
+    title3: MakeStylesStyleFunctionRule<Theme>;
+    title2: MakeStylesStyleFunctionRule<Theme>;
+    title1: MakeStylesStyleFunctionRule<Theme>;
+    largeTitle: MakeStylesStyleFunctionRule<Theme>;
+    display: MakeStylesStyleFunctionRule<Theme>;
+};
 
 // @public
 export const useText: (props: TextProps, ref: React_2.Ref<HTMLElement>, defaultProps?: TextProps | undefined) => TextState;
