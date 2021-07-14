@@ -149,6 +149,7 @@ export const styles = (props: ICalendarDayGridStyleProps): ICalendarDayGridStyle
     daySelected: [
       dateRangeType !== DateRangeType.Month && {
         backgroundColor: palette.neutralLight + '!important',
+        border: `1px solid ${palette.neutralSecondary}`,
         selectors: {
           ['&:hover, &.' + classNames.hoverStyle + ', &.' + classNames.pressedStyle]: {
             backgroundColor: palette.neutralLight + '!important',
